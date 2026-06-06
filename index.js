@@ -29,9 +29,11 @@ async function sendSMS(from, to, message) {
 }
 
 app.post('/missed-call', async (req, res) => {
-  console.log('incoming:', req.body);
-  const caller = req.body.from || req.body.From;
-  const ourNum = req.body.to   || req.body.To;
+  console.log('incoming:', JSON.stringify(req.body));
+  
+  const caller = req.body.from;
+  const ourNum = req.body.to;
+
   console.log('caller:', caller, 'ourNum:', ourNum);
 
   const { data: biz, error } = await db
