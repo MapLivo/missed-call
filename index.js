@@ -8,6 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const handled = new Set();
 
 async function sendSMS(from, to, message) {
   const res = await fetch(
@@ -44,13 +45,21 @@ app.post('/missed-call', async (req, res) => {
   const caller  = payload.from;
   const ourNum  = payload.to;
   const status  = payload.status;
+  const callId  = payload.id;
 
-  console.log('caller:', caller, 'ourNum:', ourNum, 'status:', status);
+  console.log('caller:', caller, 'ourNum:', ourNum, 'status:', status, 'callId:', callId);
 
   if (!caller || !ourNum || status !== 'no-answer') {
     res.sendStatus(200);
     return;
   }
+
+  if (handled.has(callId)) {
+    console.log('already handled:', callId);
+    res.sendStatus(200);
+    return;
+  }
+  handled.add(callId);
 
   const { data: biz } = await db
     .from('businesses')
