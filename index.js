@@ -11,7 +11,7 @@ const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_K
 
 async function sendSMS(from, to, message) {
   const res = await fetch(
-    `https://api.bird.com/workspaces/${process.env.BIRD_WORKSPACE_ID}/channels/${process.env.BIRD_CHANNEL_ID}/messages`,
+    `https://api.bird.com/workspaces/${process.env.BIRD_WORKSPACE_ID}/messages`,
     {
       method: 'POST',
       headers: {
@@ -25,7 +25,8 @@ async function sendSMS(from, to, message) {
         body: {
           type: 'text',
           text: { text: message }
-        }
+        },
+        channelId: process.env.BIRD_CHANNEL_ID
       })
     }
   );
