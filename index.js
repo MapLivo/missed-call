@@ -64,6 +64,8 @@ app.post('/missed-call', async (req, res) => {
   }
   recentCalls.set(key, now);
 
+  res.sendStatus(200);
+
   const { data: biz } = await db
     .from('businesses')
     .select('*')
@@ -73,8 +75,8 @@ app.post('/missed-call', async (req, res) => {
 
   console.log('biz found:', !!biz);
 
-if (biz) {
-    await new Promise(resolve => setTimeout(resolve, 5000));
+  if (biz) {
+    await new Promise(resolve => setTimeout(resolve, 30000));
     const msg = biz.sms_template
       .replace('{name}', biz.name)
       .replace('{url}',  biz.booking_url);
@@ -86,8 +88,6 @@ if (biz) {
       type: 'missed_call'
     });
   }
-
-  res.sendStatus(200);
 });
 
 app.listen(process.env.PORT, () =>
