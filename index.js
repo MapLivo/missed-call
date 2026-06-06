@@ -29,21 +29,25 @@ async function sendSMS(from, to, message) {
 }
 
 app.post('/missed-call', async (req, res) => {
-  console.log('incoming:', JSON.stringify(req.body));
-  
-  const caller = req.body.from;
-  const ourNum = req.body.to;
+  const payload = req.body.payload || req.body;
+  const caller  = payload.from;
+  const ourNum  = payload.to;
 
   console.log('caller:', caller, 'ourNum:', ourNum);
 
-  const { data: biz, error } = await db
+  if (!caller || !ourNum) {
+    res.sendStatus(200);
+    return;
+  }
+
+  const { data: biz } = await db
     .from('businesses')
     .select('*')
     .eq('bird_number', ourNum)
     .eq('active', true)
     .single();
 
-  console.log('biz:', biz, 'error:', error);
+  console.log('biz found:', !!biz);
 
   if (biz) {
     const msg = biz.sms_template
@@ -57,6 +61,7 @@ app.post('/missed-call', async (req, res) => {
       type: 'missed_call'
     });
   }
+
   res.sendStatus(200);
 });
 
