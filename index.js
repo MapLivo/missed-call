@@ -11,7 +11,7 @@ const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_K
 
 async function sendSMS(from, to, message) {
   const res = await fetch(
-    `https://api.bird.com/workspaces/${process.env.BIRD_WORKSPACE_ID}/messages`,
+    `https://api.bird.com/workspaces/${process.env.BIRD_WORKSPACE_ID}/channels/${process.env.BIRD_CHANNEL_ID}/messages`,
     {
       method: 'POST',
       headers: {
@@ -19,13 +19,19 @@ async function sendSMS(from, to, message) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        receiver: { contacts: [{ identifierValue: to }] },
-        body: { type: 'sms', sms: { text: message } },
-        sender: { identifierValue: from }
+        receiver: {
+          contacts: [{ identifierValue: to }]
+        },
+        body: {
+          type: 'text',
+          text: { text: message }
+        }
       })
     }
   );
-  return res.json();
+  const data = await res.json();
+  console.log('SMS response status:', res.status, JSON.stringify(data));
+  return data;
 }
 
 app.post('/missed-call', async (req, res) => {
