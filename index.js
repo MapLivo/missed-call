@@ -43,10 +43,11 @@ app.post('/missed-call', async (req, res) => {
   const payload = req.body.payload || req.body;
   const caller  = payload.from;
   const ourNum  = payload.to;
+  const status  = payload.status;
 
-  console.log('caller:', caller, 'ourNum:', ourNum);
+  console.log('caller:', caller, 'ourNum:', ourNum, 'status:', status);
 
-  if (!caller || !ourNum) {
+  if (!caller || !ourNum || status !== 'no-answer') {
     res.sendStatus(200);
     return;
   }
