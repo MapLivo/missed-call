@@ -73,7 +73,8 @@ app.post('/missed-call', async (req, res) => {
 
   console.log('biz found:', !!biz);
 
-  if (biz) {
+if (biz) {
+    await new Promise(resolve => setTimeout(resolve, 5000));
     const msg = biz.sms_template
       .replace('{name}', biz.name)
       .replace('{url}',  biz.booking_url);
