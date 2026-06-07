@@ -45,10 +45,11 @@ app.post('/missed-call', async (req, res) => {
   const caller  = payload.from;
   const ourNum  = payload.to;
   const status  = payload.status;
+  const endedAt = payload.endedAt;
 
-  console.log('caller:', caller, 'ourNum:', ourNum, 'status:', status);
+  console.log('caller:', caller, 'ourNum:', ourNum, 'status:', status, 'endedAt:', endedAt);
 
-  if (!caller || !ourNum || status !== 'no-answer') {
+  if (!caller || !ourNum || status !== 'no-answer' || !endedAt) {
     res.sendStatus(200);
     return;
   }
@@ -76,7 +77,6 @@ app.post('/missed-call', async (req, res) => {
   console.log('biz found:', !!biz);
 
   if (biz) {
-    await new Promise(resolve => setTimeout(resolve, 30000));
     const msg = biz.sms_template
       .replace('{name}', biz.name)
       .replace('{url}',  biz.booking_url);
